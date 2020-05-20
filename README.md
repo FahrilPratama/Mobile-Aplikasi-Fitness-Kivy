@@ -36,5 +36,4 @@ python -m pip install kivy_deps.angle==0.1.*
 python -m pip install kivy==1.11.1
 ```
 
->[!PERHATIAN]
 >Saya sarankan menggunakan Python 3.7.1 dan Pycharm sebagai editornya
