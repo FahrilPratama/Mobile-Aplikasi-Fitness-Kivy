@@ -1,6 +1,55 @@
 <SettingsScreen>
-    Button:
-        text:
-            "You are at the settings screen"
-        on_release:
-            app.change_screen("home_screen")
+    canvas:
+        Color:
+            rgb: utils.get_color_from_hex("#39B3F2")
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    FloatLayout:
+        Label:
+            id:friend_id_label
+            text:"ID: "
+            size_hint: 1,.1
+            pos_hint: {"top":1, "left":1}
+        ImageButton:
+            size_hint: .4,.2
+            pos_hint: {"top":.90, "left":1}
+            source: "icons/avatars/man.png"
+            on_release:
+                app.change_screen("change_avatar_screen")
+        LabelButton:
+            size_hint: .3,.2
+            pos_hint: {"top":.90, "right":.8}
+            text: "Ganti Foto Profil"
+            on_release:
+                app.change_screen("change_avatar_screen")
+        ImageButton:
+            size_hint: .4,.2
+            pos_hint: {"top":.69, "left":1}
+            source: "icons/add.png"
+            on_release:
+                print("add friend")
+        LabelButton:
+            size_hint: .3,.2
+            pos_hint: {"top":.69, "right":.8}
+            text: "Tambah Teman"
+            on_release:
+                print("add friend")
+        ImageButton:
+            size_hint: .4,.2
+            pos_hint: {"top":.48, "left":1}
+            source: "icons/sign_out.png"
+            on_release:
+                print("logout")
+        LabelButton:
+            size_hint: .3,.2
+            pos_hint: {"top":.48, "right":.8}
+            text: "Logout"
+            on_release:
+                print("logout")
+        ImageButton:
+            source:"icons/back.png"
+            size_hint: .15, .15
+            pos_hint: {"top": .2, "right": .95}
+            on_release:
+                app.change_screen("home_screen")
