@@ -31,27 +31,30 @@
             pos_hint:{"top":.7,"left":1}
             size_hint:1,.1
             id:streak_label
-        GridLayout:
-            id:banner_grid
-            cols:1
+        ScrollView:
             pos_hint:{"top": 0.6,"left":1}
             size_hint:1,.4
+            GridLayout:
+                id:banner_grid
+                cols:1
+                spacing: 10, 10
+                size_hint_y: None
+                height: self.minimum_height
+                row_default_height: '100dp'
+                row_force_default: True
         GridLayout:
             rows:1
             pos_hint:{"top":.2,"left":1}
             size_hint:1,.2
             ImageButton:
-                source: "icons/007-add-friend.png"
+                source: "icons/add.png"
                 on_release:
-                    print("RELEASED ADD FRIEND BUTTON")
+                    print("RELEASED ADD BUTTON")
             ImageButton:
-                source: "icons/workouts/football.png"
+                source: "icons/friends_list.png"
                 on_release:
-                    print("RELEASED FOOTBALL BUTTON")
+                    print("RELEASED FRIEND LIST BUTTON")
             ImageButton:
-                source: "icons/workouts/ice-hockey.png"
-                on_press:
-                    self.source = "icons/avatars/boy.png"
+                source: "icons/settings.png"
                 on_release:
-                    self.source = "icons/workouts/ice-hockey.png"
-                    print("RELEASED ICE HOCKEY BUTTON")
+                    print("RELEASED SETTING BUTTON")
