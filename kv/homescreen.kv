@@ -1,0 +1,57 @@
+#:import utils kivy.utils
+
+
+<HomeScreen>
+    FloatLayout:
+        canvas:
+            Color:
+                rgb: utils.get_color_from_hex("#39B3F2")
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        GridLayout:
+            rows:1
+            pos_hint:{"top":1,"left":1}
+            size_hint:1,.1
+            Image:
+                source: "icons/002-sunrise.png"
+            Image:
+                source: "icons/001-sun.png"
+        GridLayout:
+            rows:1
+            pos_hint:{"top":.9,"left":1}
+            size_hint:1,.2
+            Image:
+                source: "icons/003-sunset.png"
+            Image:
+                id:avatar_image
+            Image:
+                source: "icons/007-crescent-moon.png"
+        Label:
+            pos_hint:{"top":.7,"left":1}
+            size_hint:1,.1
+            id:streak_label
+        GridLayout:
+            id:banner_grid
+            cols:1
+            pos_hint:{"top": 0.6,"left":1}
+            size_hint:1,.4
+        GridLayout:
+            rows:1
+            pos_hint:{"top":.2,"left":1}
+            size_hint:1,.2
+            ImageButton:
+                source: "icons/007-add-friend.png"
+                on_release:
+                    print("RELEASED ADD FRIEND BUTTON")
+            ImageButton:
+                source: "icons/workouts/football.png"
+                on_release:
+                    print("RELEASED FOOTBALL BUTTON")
+            ImageButton:
+                source: "icons/workouts/ice-hockey.png"
+                on_press:
+                    self.source = "icons/avatars/boy.png"
+                on_release:
+                    self.source = "icons/workouts/ice-hockey.png"
+                    print("RELEASED ICE HOCKEY BUTTON")
