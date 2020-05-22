@@ -1,14 +1,27 @@
 #:include kv/homescreen.kv
 #:include kv/settingsscreen.kv
 #:include kv/changeavatarscreen.kv
+#:include kv/loginscreen.kv
+#:include kv/registerscreen.kv
+#:include kv/popups.kv
+#:include kv/addfriendscreen.kv
+#:include kv/addworkoutscreen.kv
+#:include kv/friendslistscreen.kv
+
 
 GridLayout:
+    canvas:
+        Color:
+            rgb: utils.get_color_from_hex("#6ebab9")
+        Rectangle:
+            size: self.size
+            pos: self.pos
     cols:1
     FloatLayout:
         GridLayout:
             canvas:
                 Color:
-                    rgb: utils.get_color_from_hex("#39B3F2")
+                    rgb: utils.get_color_from_hex("#6ebab9")
                 Rectangle:
                     size: self.size
                     pos: self.pos
@@ -16,13 +29,17 @@ GridLayout:
             pos_hint:{"top":1,"left":1}
             size_hint:1, .05
             Image:
-                source: "icons/002-sunrise.png"
-            Image:
+                id: time_indicator2
                 source: "icons/001-sun.png"
+                opacity: 0
+            Image:
+                id: time_indicator3
+                source: "icons/003-sunset.png"
+                opacity: 0
         FloatLayout:
             canvas:
                 Color:
-                    rgb: utils.get_color_from_hex("#39B3F2")
+                    rgb: utils.get_color_from_hex("#6ebab9")
                 Rectangle:
                     size: self.size
                     pos: self.pos
@@ -30,21 +47,29 @@ GridLayout:
             pos_hint:{"top":.95,"left":1}
             size_hint:1,.15
             Image:
-                source: "icons/003-sunset.png"
+                id: time_indicator1
+                source: "icons/002-sunrise.png"
+                opacity: 0
                 size_hint: 0.25, 0.5
                 pos_hint: {"top": 1, "right": 0.25}
             Image:
                 id:avatar_image
+                source: "icons/avatars/man.png"
                 size_hint: 0.5, 1
                 pos_hint: {"top": 1, "right": 0.75}
             Image:
+                id: time_indicator4
                 source: "icons/007-crescent-moon.png"
+                opacity: 0
                 size_hint: 0.25, 0.5
                 pos_hint: {"top": 1, "right": 1}
         ScreenManager:
             size_hint: 1, 0.799
             pos_hint: {"top": 0.799, "left": 1}
             id:screen_manager
+            LoginScreen:
+                name:"login_screen"
+                id:login_screen
             HomeScreen:
                 name:"home_screen"
                 id:home_screen
@@ -54,3 +79,15 @@ GridLayout:
             ChangeAvatarScreen:
                 name:"change_avatar_screen"
                 id:change_avatar_screen
+            RegisterScreen:
+                name:"register_screen"
+                id:register_screen
+            AddFriendScreen:
+                name:"add_friend_screen"
+                id:add_friend_screen
+            AddWorkoutScreen:
+                name:"add_workout_screen"
+                id:add_workout_screen
+            FriendsListScreen:
+                name: "friends_list_screen"
+                id: friends_list_screen

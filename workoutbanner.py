@@ -11,7 +11,7 @@ class WorkoutsBanner(GridLayout):
     def __init__(self, **kwargs):
         super(WorkoutsBanner, self).__init__()
         with self.canvas.before:
-            Color(rgb=(kivy.utils.get_color_from_hex("#67697C")))
+            Color(rgb=(kivy.utils.get_color_from_hex("#dae8e8")))
             self.rect = Rectangle(size=self.size, pos=self.pos)
         self.bind(pos=self.update_rect, size=self.update_rect)
 
@@ -19,16 +19,16 @@ class WorkoutsBanner(GridLayout):
         left = FloatLayout()
         left_image = Image(source="icons/workouts/" + kwargs['workout_image'], size_hint=(1, 0.8),
                            pos_hint={"top": 1, "right": 1})
-        left_label = Label(text=kwargs['description'], size_hint=(1, 0.2), pos_hint={"top": 0.2, "right": 1})
+        left_label = Label(text=kwargs['description'], size_hint=(1, 0.2), pos_hint={"top": 0.2, "right": 1}, color=(0, 0, 0, 1))
         left.add_widget(left_image)
         left.add_widget(left_label)
 
         # Need middle FloatLayout
         middle = FloatLayout()
-        middle_image = Image(source="icons/" + kwargs['type_image'], size_hint=(1, 0.8),
+        middle_image = Image(source=kwargs['type_image'], size_hint=(1, 0.8),
                              pos_hint={"top": 1, "right": 1})
         middle_label = Label(text=str(kwargs['number']) + " " + kwargs['units'], size_hint=(1, 0.2),
-                             pos_hint={"top": 0.2, "right": 1})
+                             pos_hint={"top": 0.2, "right": 1}, color=(0, 0, 0, 1))
         middle.add_widget(middle_image)
         middle.add_widget(middle_label)
 
@@ -37,7 +37,7 @@ class WorkoutsBanner(GridLayout):
         right_image = Image(source="icons/likes.png", size_hint=(1, 0.8),
                              pos_hint={"top": 1, "right": 1})
         right_label = Label(text=str(kwargs['likes']) + " Disukai", size_hint=(1, 0.2),
-                             pos_hint={"top": 0.2, "right": 1})
+                             pos_hint={"top": 0.2, "right": 1}, color=(0, 0, 0, 1))
         right.add_widget(right_image)
         right.add_widget(right_label)
 

@@ -1,0 +1,35 @@
+<AddFriendScreen>
+    canvas:
+        Color:
+            rgb: utils.get_color_from_hex("#6ebab9")
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    FloatLayout:
+        canvas:
+            Color:
+                rgb: utils.get_color_from_hex("#6ebab9")
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        TextInput:
+            id:add_friend_input
+            background_color: utils.get_color_from_hex("#285251")
+            foreground_color : (1,1,1,1)
+            hint_text: "Masukkan ID teman disini"
+            size_hint: .8, .1
+            pos_hint:{"top":.8, "right":.9}
+            text_size: self.size
+            valign: 'middle'
+        ImageButton:
+            source:"icons/back.png"
+            size_hint: .15, .15
+            pos_hint:{"top": .2, "right": .25}
+            on_release:
+                app.change_screen("settings_screen", "swap")
+        ImageButton:
+            source:"icons/next-1.png"
+            size_hint: .15, .15
+            pos_hint:{"top": .2, "right": .92}
+            on_release:
+                app.add_friend(add_friend_input.text)

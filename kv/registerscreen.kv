@@ -1,0 +1,47 @@
+<RegisterScreen>
+    canvas:
+        Color:
+            rgb: utils.get_color_from_hex("#6ebab9")
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    FloatLayout:
+        canvas:
+            Color:
+                rgb: utils.get_color_from_hex("#6ebab9")
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        TextInput:
+            id:register_email
+            background_color: utils.get_color_from_hex("#285251")
+            foreground_color : (1,1,1,1)
+            hint_text:"Email yang ingin di daftarkan"
+            size_hint: .8, .1
+            pos_hint:{"top": .95, "right": .9}
+            text_size: self.size
+            valign: 'middle'
+        TextInput:
+            id:register_password
+            background_color: utils.get_color_from_hex("#285251")
+            foreground_color : (1,1,1,1)
+            password: True
+            hint_text:"Password yang ingin di daftarkan"
+            size_hint: .8, .1
+            pos_hint:{"top": .84, "right": .9}
+            text_size: self.size
+            valign: 'middle'
+        LabelButton:
+            canvas.before:
+                Color:
+                    rgb: utils.get_color_from_hex("#138520") if self.state == 'normal' else utils.get_color_from_hex("#0f4d16")
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [15]
+            text:"[b]DAFTAR[/b]"
+            markup: True
+            size_hint: .8, .1
+            pos_hint:{"top": .2, "right": .9}
+            on_release:
+                app.my_firebase.sign_up(register_email.text, register_password.text)

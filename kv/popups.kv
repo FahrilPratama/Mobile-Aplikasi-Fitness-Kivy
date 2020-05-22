@@ -1,0 +1,24 @@
+<Popups>:
+    Label:
+        text: "" if app.popup_message is None else app.popup_message
+        size_hint: .95, 0.5
+        pos_hint: {"x":0.05, "top":.98}
+        text_size: self.size
+        valign: 'top'
+
+    Button:
+        canvas.before:
+            Color:
+                rgb: utils.get_color_from_hex("#944941") if self.state == 'normal' else utils.get_color_from_hex("#4a2723")
+            RoundedRectangle:
+                size: self.size
+                pos: self.pos
+                radius: [10]
+        background_color: 0,0,0,0
+        text: "OK !"
+        # set size of the button
+        size_hint: .98, 0.2
+        # set position of the button
+        pos_hint: {"x":0.01, "y":0.03}
+        on_release:
+            app.dismiss_popup()

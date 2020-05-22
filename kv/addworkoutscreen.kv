@@ -1,0 +1,161 @@
+<AddWorkoutScreen>
+    canvas:
+        Color:
+            rgb: utils.get_color_from_hex("#6ebab9")
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    FloatLayout:
+        canvas:
+            Color:
+                rgb: utils.get_color_from_hex("#6ebab9")
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        Label:
+            text: "Pilih Gambar Latihan"
+            size_hint: 1, .05
+            pos_hint: {"top": 1, "right": 1}
+        ScrollView:
+            size_hint: 1, .15
+            pos_hint: {"top": .95, "right": 1}
+            GridLayout:
+                rows:1
+                size_hint_x: None
+                width: self.minimum_width
+                col_default_width: '100dp'
+                col_force_default: True
+                id: workout_image_grid
+        TextInput:
+            background_color: utils.get_color_from_hex("#285251")
+            foreground_color : (1,1,1,1)
+            hint_text: "Deskirpsi singkat latihan (Optional)"
+            size_hint: .8, .1
+            pos_hint: {"top": .78, "right": .9}
+            id: description_input
+            text_size: self.size
+            valign: 'middle'
+        GridLayout:
+            rows:1
+            size_hint: 1, .15
+            pos_hint: {"top": .66, "right": 1}
+            ImageButton:
+                source:"icons/time.png"
+                on_release:
+                    time_label.color = (1,1,1,1)
+                    distance_label.color = (0,0,0,1)
+                    sets_label.color = (0,0,0,1)
+                    app.option_choice = self.source
+            ImageButton:
+                source:"icons/distance.png"
+                on_release:
+                    time_label.color = (0,0,0,1)
+                    distance_label.color = (1,1,1,1)
+                    sets_label.color = (0,0,0,1)
+                    app.option_choice = self.source
+            ImageButton:
+                source:"icons/sets.png"
+                on_release:
+                    time_label.color = (0,0,0,1)
+                    distance_label.color = (0,0,0,1)
+                    sets_label.color = (1,1,1,1)
+                    app.option_choice = self.source
+        GridLayout:
+            rows:1
+            size_hint: 1, .05
+            pos_hint: {"top": .52, "right": 1}
+            Label:
+                text: "Waktu"
+                color: (0,0,0,1)
+                id:time_label
+            Label:
+                text: "Jarak"
+                color: (0,0,0,1)
+                id:distance_label
+            Label:
+                text: "Set"
+                color: (0,0,0,1)
+                id:sets_label
+        TextInput:
+            background_color: utils.get_color_from_hex("#285251")
+            foreground_color : (1,1,1,1)
+            hint_text: "Jumlah"
+            id: quantity_input
+            size_hint: .3, .1
+            pos_hint: {"top": .46, "right": .4}
+            text_size: self.size
+            valign: 'middle'
+            on_text:
+                self.background_color = utils.get_color_from_hex("#285251")
+        TextInput:
+            background_color: utils.get_color_from_hex("#285251")
+            foreground_color : (1,1,1,1)
+            hint_text: "Satuan"
+            id: units_input
+            size_hint: .3, .1
+            pos_hint: {"top": .46, "right": .9}
+            text_size: self.size
+            valign: 'middle'
+            on_text:
+                self.background_color = utils.get_color_from_hex("#285251")
+        TextInput:
+            background_color: utils.get_color_from_hex("#285251")
+            foreground_color : (1,1,1,1)
+            hint_text: "Tahun (YYYY)"
+            id: year_input
+            size_hint: .2, .1
+            pos_hint: {"top": .33, "right": .9}
+            text_size: self.size
+            valign: 'middle'
+            on_text:
+                self.background_color = utils.get_color_from_hex("#285251")
+        TextInput:
+            background_color: utils.get_color_from_hex("#285251")
+            foreground_color : (1,1,1,1)
+            hint_text: "Bulan (MM)"
+            id: month_input
+            size_hint: .2, .1
+            pos_hint: {"top": .33, "right": .6}
+            text_size: self.size
+            valign: 'middle'
+            on_text:
+                self.background_color = utils.get_color_from_hex("#285251")
+        TextInput:
+            background_color: utils.get_color_from_hex("#285251")
+            foreground_color : (1,1,1,1)
+            hint_text: "Hari (DD)"
+            id: day_input
+            size_hint: .2, .1
+            pos_hint: {"top": .33, "right": .3}
+            text_size: self.size
+            valign: 'middle'
+            on_text:
+                self.background_color = utils.get_color_from_hex("#285251")
+        LabelButton:
+            canvas.before:
+                Color:
+                    rgb: utils.get_color_from_hex("#138520") if self.state == 'normal' else utils.get_color_from_hex("#0f4d16")
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [15]
+            size_hint: .3, .1
+            pos_hint: {"top": .15, "right": .98}
+            text:"[b]TAMBAH[/b]"
+            markup: True
+            on_release:
+                app.add_workout()
+        LabelButton:
+            canvas.before:
+                Color:
+                    rgb: utils.get_color_from_hex("#e32727") if self.state == 'normal' else utils.get_color_from_hex("#822323")
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [15]
+            size_hint: .3, .1
+            pos_hint: {"top": .15, "right": .32}
+            text:"[b]KEMBALI[/b]"
+            markup: True
+            on_release:
+                app.change_screen("home_screen", "card")
