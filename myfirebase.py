@@ -100,3 +100,22 @@ class MyFirebase():
             app.root.ids["register_screen"].ids["register_password"].text = ""
 
             app.on_start()
+
+    def update_likes(self, friend_id, workout_key, likes, *args):
+        app = App.get_running_app()
+        friend_patch_data = '{"likes": %s}' % (likes)
+        # Get their database entry based on their friend id so we can find their local ID
+        check_req = requests.get(
+            'https://fitnessapp-kivy.firebaseio.com/.json?orderBy="my_friend_id"&equalTo="' + friend_id + '"')
+        data = check_req.json()
+        their_local_id = list(data.keys())[0]
+
+        self.update_likes_patch_req = requests.patch(
+            "https://fitnessapp-kivy.firebaseio.com/%s/workouts/%s.json?auth=%s" % (
+                their_local_id, workout_key, app.id_token), data=friend_patch_data)
+        print("https://fitnessapp-kivy.firebaseio.com/%s/workouts/%s.json?auth=%s" % (
+        their_local_id, workout_key, app.id_token))
+        if self.update_likes_patch_req.ok == True:
+            app.show_popup("Anda menyukai latihan teman anda!", "add_like")
+        elif self.update_likes_patch_req.ok == False:
+            app.show_popup("Maaf, ada kesalahan pada sistem", "error_add_like")

@@ -1,0 +1,35 @@
+<NicknamePopup@ModalView>:
+    background_color: (0,0,0,0.4)
+    # ... do your stuff
+    size_hint: .8, .3
+    pos_hint: {"top": .65, "right": .9}
+    FloatLayout:
+        canvas:
+            Color:
+                rgb: utils.get_color_from_hex("#40807f")
+            RoundedRectangle:
+                size: self.size
+                pos: self.pos
+        Label:
+            text: "Atur Nama Panggilan"
+            size_hint: .8, .2
+            pos_hint: {"top": .9, "right": .9}
+        TextInput:
+            hint_text: "Nama Panggilan"
+            size_hint: .8, .2
+            pos_hint: {"top": .6, "right": .9}
+            id: nickname_field
+        LabelButton:
+            size_hint: .8, .2
+            pos_hint: {"top": .3, "right": .9}
+            canvas.before:
+                Color:
+                    rgb: utils.get_color_from_hex("#138520") if self.state == 'normal' else utils.get_color_from_hex("#0f4d16")
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            text: "[b]OK[/b]"
+            markup: True
+            on_release:
+                app.set_friend_nickname(nickname_field.text)
+                root.dismiss()

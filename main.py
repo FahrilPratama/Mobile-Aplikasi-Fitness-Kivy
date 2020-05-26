@@ -1,9 +1,8 @@
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen, WipeTransition, SwapTransition, SlideTransition, NoTransition, CardTransition
-from kivy.uix.button import ButtonBehavior
-from kivy.uix.label import Label
-from kivy.uix.image import Image
+from specialbuttons import ImageButton, LabelButton
+from kivy.properties import DictProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
 from os import walk
@@ -11,6 +10,7 @@ from functools import partial
 from datetime import datetime
 from workoutbanner import WorkoutsBanner
 from myfirebase import MyFirebase
+from friendbanner import FriendBanner
 import requests
 import json
 import helperfunctions
@@ -27,15 +27,11 @@ class AddFriendScreen(Screen):
 class AddWorkoutScreen(Screen):
     pass
 
+class FriendWorkoutScreen(Screen):
+    pass
+
+
 class FriendsListScreen(Screen):
-    pass
-
-
-class LabelButton(ButtonBehavior, Label):
-    pass
-
-
-class ImageButton(ButtonBehavior, Image):
     pass
 
 
@@ -70,10 +66,38 @@ class MainApp(App):
     workout_image = None
     workout_image_widget = ""
     option_choice = None
+    nicknames = DictProperty()
+    their_friend_id = ""
 
     def build(self):
         self.my_firebase = MyFirebase()
         return GUI
+
+    def set_friend_nickname(self, nickname, *args):
+        # Make sure they entered something
+        if nickname == "":
+            return
+        # Set the nickname
+        print("YO", self.their_friend_id, type(self.their_friend_id))
+        print(self.nicknames)
+        self.nicknames[int(self.their_friend_id)] = nickname
+
+        # Update firebase
+        print(self.nicknames)
+        print(json.dumps(self.nicknames))
+        workout_request = requests.patch("https://fitnessapp-kivy.firebaseio.com/%s/nicknames.json?auth=%s"
+                                        %(self.local_id, self.id_token), data=json.dumps(self.nicknames))
+        print(workout_request.content)
+        # Update the nickname in the friend_workout_screen
+        their_friend_id_label = self.root.ids.friend_workout_screen.ids.friend_workout_screen_friend_id
+        their_friend_id_label.text = "[u]" + nickname + "[/u]"
+
+        # Update the nickname in the friend workout banner
+        # Go through each widget in the friends list grid
+        for w in self.root.ids['friends_list_screen'].ids['friends_list_grid'].walk():
+            if w.__class__ == FriendBanner:
+                if w.friend_id == self.their_friend_id:
+                    w.update_friend_label_text(their_friend_id_label.text)
 
     def on_start(self):
         # Choose the correct time icon to show based on the current hour of day
@@ -130,6 +154,33 @@ class MainApp(App):
 
             # Friend List
             self.friends_list = data['friends']
+
+            # Get nicknames
+            try:
+                print(data['nicknames'])
+                for i, friend_id in enumerate(self.friends_list.split(",")):
+                    if friend_id:
+                        print(i, friend_id)
+                        self.nicknames[friend_id] = data['nicknames'][i]
+            except:
+                self.nicknames = data.get('nicknames', {})
+
+            # Populate friends list grid
+            friends_list_array = self.friends_list.split(",")
+            for friend_id in friends_list_array:
+                friend_id = friend_id.replace(" ", "")
+                if friend_id == "":
+                    continue
+                try:
+                    nicknames = list(self.friends_list.keys())
+                except:
+                    nicknames = self.nicknames
+                if friend_id in nicknames:
+                    friend_id_text = "[u]" + self.nicknames[friend_id] + "[/u]"
+                else:
+                    friend_id_text = "[u]Friend ID: " + friend_id + "[/u]"
+                friend_banner = FriendBanner(friend_id=friend_id, friend_id_text=friend_id_text)
+                self.root.ids['friends_list_screen'].ids['friends_list_grid'].add_widget(friend_banner)
 
             # Update id label
             self.my_friend_id = data['my_friend_id']
@@ -196,10 +247,7 @@ class MainApp(App):
             # new_friend_id = data[key]['my_friend_id']
 
             # Add friend id to friends list and patch new friends list
-            if self.friends_list == "":
-                self.friends_list += "%s" % friend_id
-            else:
-                self.friends_list += ",%s" % friend_id
+            self.friends_list += ",%s" % friend_id
             patch_data = '{"friends": "%s"}' % self.friends_list
             patch_req = requests.patch(
                 "https://fitnessapp-kivy.firebaseio.com/" + self.local_id + ".json?auth=" + self.id_token,
@@ -211,15 +259,12 @@ class MainApp(App):
                 self.show_popup("Maaf, ada kesalahan pada sistem", "error_adding")
 
             # Add new friend banner in friends list screen
-            # if friend_id in self.nicknames.keys():
-            #     friend_id_text = "[u]" + self.nicknames[friend_id] + "[/u]"
-            # else:
-            #     friend_id_text = "[u]Friend ID: " + friend_id + "[/u]"
-            # friend_banner = FriendBanner(friend_id=friend_id, friend_id_text=friend_id_text)
-            # self.root.ids['friends_list_screen'].ids['friends_list_grid'].add_widget(friend_banner)
-            # # Inform them they added a friend successfully
-            # self.root.ids['add_friend_screen'].ids[
-            #     'add_friend_label'].text = "Friend ID %s added successfully." % friend_id
+            if friend_id in self.nicknames.keys():
+                friend_id_text = "[u]" + self.nicknames[friend_id] + "[/u]"
+            else:
+                friend_id_text = "[u]Friend ID: " + friend_id + "[/u]"
+            friend_banner = FriendBanner(friend_id=friend_id, friend_id_text=friend_id_text)
+            self.root.ids['friends_list_screen'].ids['friends_list_grid'].add_widget(friend_banner)
 
     def change_avatar(self, image, widget_id):
         # Change avatar in app
@@ -329,6 +374,90 @@ class MainApp(App):
                 workout_ids['quantity_input'].background_color = (1, 0, 0, 1)
                 return
 
+
+    def remove_friend(self, friend_id_to_remove, *args):
+        # Remove the friend id from the friends list variable
+        self.friends_list = self.friends_list.replace(",%s"%friend_id_to_remove, "")
+
+        # Update the firebase database with the new (truncated) friends list
+        patch_data = '{"friends": "%s"}' % self.friends_list
+        patch_req = requests.patch(
+            "https://fitnessapp-kivy.firebaseio.com/%s.json?auth=%s" % (self.local_id, self.id_token),
+            data=patch_data)
+
+        # Remove the friend banner
+        friends_list_grid = self.root.ids['friends_list_screen'].ids['friends_list_grid']
+        for w in friends_list_grid.walk():
+            if w.__class__ == FriendBanner:
+                if w.friend_id == friend_id_to_remove:
+                    friends_list_grid.remove_widget(w)
+
+        # Reload the friends list screen
+        self.show_popup("Teman berhasil di hapus", "deleted_friend")
+
+    def load_friend_workout_screen(self, friend_id, widget):
+        # Initialize friend streak label to 0
+        friend_streak_label = self.root.ids['friend_workout_screen'].ids['friend_streak_label']
+        friend_streak_label.text = "0 Hari Berturut-turut"
+
+
+        # Make it so we know which friend's workout screen has been loaded for app.set_friend_nickname
+        self.their_friend_id = friend_id
+
+        # Get their workouts by using their friend id to query the database
+        friend_data_req = requests.get('https://fitnessapp-kivy.firebaseio.com/.json?orderBy="my_friend_id"&equalTo="' + friend_id + '"')
+
+        friend_data = friend_data_req.json()
+        workouts = list(friend_data.values())[0]['workouts']
+
+        friend_banner_grid = self.root.ids['friend_workout_screen'].ids['friend_banner_grid']
+
+        # Remove each widget in the friend_banner_grid
+        for w in friend_banner_grid.walk():
+            if w.__class__ == WorkoutsBanner:
+                friend_banner_grid.remove_widget(w)
+
+        # Populate their avatar image
+        friend_avatar_image = self.root.ids.friend_workout_screen.ids.friend_workout_screen_image
+        friend_avatar_image.source = "icons/avatars/" + list(friend_data.values())[0]['avatar']
+
+        # Populate their friend ID and nickname
+        print("Need to populate nickname")
+        their_friend_id_label = self.root.ids.friend_workout_screen.ids.friend_workout_screen_friend_id
+        try:
+            nicknames = list(self.nicknames.keys())
+        except:
+            nicknames = self.nicknames
+        if friend_id in nicknames:
+            their_friend_id_label.text = "[u]" + self.nicknames[friend_id] + "[/u]"
+        else:
+            their_friend_id_label.text = "[u]Nama Panggilan[/u]"
+
+        # Populate the friend_workout_screen
+        # Loop through each key in the workouts dictionary
+        #    for the value for that key, create a workout banner
+        #    add the workout banner to the scrollview
+        if workouts == {} or workouts == "":
+            # Change to the friend_workout_screen
+            self.change_screen("friend_workout_screen", "slide")
+            return
+        workout_keys = list(workouts.keys())
+        workout_keys.sort(key=lambda value: datetime.strptime(workouts[value]['date'], "%m/%d/%Y"))
+        workout_keys = workout_keys[::-1]
+        for workout_key in workout_keys:
+            workout = workouts[workout_key]
+            W = WorkoutsBanner(workout_image=workout['workout_image'], description=workout['description'],
+                              type_image=workout['type_image'], number=workout['number'], units=workout['units'],
+                              likes=workout['likes'],date=workout['date'], likeable=True, workout_key=workout_key)
+            friend_banner_grid.add_widget(W)
+
+        # Populate the streak label
+        friend_streak_label.text = helperfunctions.count_workout_streak(workouts) + " Hari Berturut-turut"
+
+
+        # Change to the friend_workout_screen
+        self.change_screen("friend_workout_screen", "slide")
+
     def change_screen(self, screen_name, transition):
         screen_manager = self.root.ids['screen_manager']
 
@@ -390,13 +519,47 @@ class MainApp(App):
         self.status_popup = ""
 
     def logout(self):
-        with open("refresh_token.txt", "w") as f:
+        # User wants to log out
+        with open("refresh_token.txt", 'w') as f:
             f.write("")
-
+        self.change_screen("login_screen", "slide")
+        # Need to set the avatar to the default image
         avatar_image = self.root.ids['avatar_image']
         avatar_image.source = "icons/avatars/man.png"
 
-        self.change_screen("login_screen", "wipe")
+        add_friend_screen = self.root.ids.add_friend_screen
+        add_friend_screen.ids.add_friend_input.text = ""
+
+        # Clear home screen
+        self.root.ids.home_screen.ids.streak_label.text = "0 Hari berturut-turut, latihan sekarang!"
+
+        # Clear login screen
+        self.root.ids.login_screen.ids.login_email.text = ""
+        self.root.ids.login_screen.ids.login_password.text = ""
+
+        self.workout_image = None
+        self.option_choice = None
+        # Clear the indication that the previous image was selected
+        if self.workout_image_widget:
+            self.workout_image_widget.canvas.before.clear()
+
+        # Need to clear widgets from previous user's friends list
+        friends_list_grid = self.root.ids['friends_list_screen'].ids['friends_list_grid']
+        for w in friends_list_grid.walk():
+            if w.__class__ == FriendBanner:
+                friends_list_grid.remove_widget(w)
+
+        # Need to clear widgets from previous user's workout grid
+        workout_banner = self.root.ids['home_screen'].ids['banner_grid']
+        for w in workout_banner.walk():
+            if w.__class__ == WorkoutsBanner:
+                workout_banner.remove_widget(w)
+
+        # Need to clear widgets from previous user's friend's workout grid
+        friend_banner_grid = self.root.ids['friend_workout_screen'].ids['friend_banner_grid']
+        for w in friend_banner_grid.walk():
+            if w.__class__ == WorkoutsBanner:
+                friend_banner_grid.remove_widget(w)
 
 
 if __name__ == '__main__':
